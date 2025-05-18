@@ -42,3 +42,19 @@ export const DishParams = z.object({
   id: z.coerce.number()
 })
 export type DishParamsType = z.TypeOf<typeof DishParams>
+
+export const CategoryWithDishesSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  description: z.string().nullable(),
+  dishes: z.array(DishSchema),
+  createdAt: z.date(),
+  updatedAt: z.date()
+})
+
+export const DishesByCategoryRes = z.object({
+  data: z.array(CategoryWithDishesSchema),
+  message: z.string()
+})
+
+export type DishesByCategoryResType = z.TypeOf<typeof DishesByCategoryRes>

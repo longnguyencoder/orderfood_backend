@@ -1,4 +1,4 @@
-import { createDish, deleteDish, getDishDetail, getDishList, updateDish } from '@/controllers/dish.controller'
+import { createDish, deleteDish, getDishDetail, getDishList, getDishesByCategory, getDishesByCategoryId, updateDish } from '@/controllers/dish.controller'
 import { pauseApiHook, requireEmployeeHook, requireLoginedHook, requireOwnerHook } from '@/hooks/auth.hooks'
 import {
   CreateDishBody,
@@ -9,10 +9,13 @@ import {
   DishParamsType,
   DishRes,
   DishResType,
+  DishesByCategoryRes,
+  DishesByCategoryResType,
   UpdateDishBody,
   UpdateDishBodyType
 } from '@/schemaValidations/dish.schema'
 import { FastifyInstance, FastifyPluginOptions } from 'fastify'
+import { z } from 'zod'
 
 export default async function dishRoutes(fastify: FastifyInstance, options: FastifyPluginOptions) {
   fastify.get<{
@@ -131,6 +134,50 @@ export default async function dishRoutes(fastify: FastifyInstance, options: Fast
       reply.send({
         message: 'Xóa món ăn thành công!',
         data: result as DishResType['data']
+      })
+    }
+  )
+
+  fastify.get<{
+    Reply: DishesByCategoryResType
+  }>(
+    '/by-category',
+    {
+      schema: {
+        response: {
+          200: DishesByCategoryRes
+        }
+      }
+    },
+    async (request, reply) => {
+      const categoriesWithDishes = await getDishesByCategory()
+      reply.send({
+        data: categoriesWithDishes as DishesByCategoryResType['data'],
+        message: 'Lấy danh sách món ăn theo danh mục thành công!'
+      })
+    }
+  )
+
+  fastify.get<{
+    Params: { categoryId: number }
+    Reply: DishesByCategoryResType
+  }>(
+    '/category/:categoryId',
+    {
+      schema: {
+        params: z.object({
+          categoryId: z.coerce.number()
+        }),
+        response: {
+          200: DishesByCategoryRes
+        }
+      }
+    },
+    async (request, reply) => {
+      const categoryWithDishes = await getDishesByCategoryId(request.params.categoryId)
+      reply.send({
+        data: [categoryWithDishes] as DishesByCategoryResType['data'],
+        message: 'Lấy danh sách món ăn theo danh mục thành công!'
       })
     }
   )

@@ -8,69 +8,59 @@ import { signAccessToken, signRefreshToken, verifyRefreshToken } from '@/utils/j
 import axios from 'axios'
 
 export const logoutController = async (refreshToken: string) => {
-  await prisma.refreshToken.delete({ // xóa refresh token khi đăng xuất
+  await prisma.refreshToken.delete({
     where: {
       token: refreshToken
     }
   })
-  return 'Đăng xuất thành công' // thông báo đăng xuất thành công
+  return 'Đăng xuất thành công'
 }
 
 export const loginController = async (body: LoginBodyType) => {
-  const account = await prisma.account.findUnique({ // tìm tài khoản theo email
+  const account = await prisma.account.findUnique({
     where: {
       email: body.email
     }
   })
-  if (!account) { // nếu tài khoản không tồn tại
+  if (!account) {
     throw new EntityError([{ field: 'email', message: 'Email không tồn tại' }])
   }
-  // so sánh mật khẩu
   const isPasswordMatch = await comparePassword(body.password, account.password)
-  // nếu mật khẩu không khớp
   if (!isPasswordMatch) {
     throw new EntityError([{ field: 'password', message: 'Email hoặc mật khẩu không đúng' }])
   }
-  // tạo access token
   const accessToken = signAccessToken({
     userId: account.id,
     role: account.role as RoleType
   })
-  // tạo refresh token
   const refreshToken = signRefreshToken({
     userId: account.id,
     role: account.role as RoleType
   })
-  // giải mã refresh token
   const decodedRefreshToken = verifyRefreshToken(refreshToken)
-  // thời hạn refresh token 
   const refreshTokenExpiresAt = new Date(decodedRefreshToken.exp * 1000)
-  // tạo refresh token mới
-  await prisma.refreshToken.create({ 
+
+  await prisma.refreshToken.create({
     data: {
       accountId: account.id,
       token: refreshToken,
       expiresAt: refreshTokenExpiresAt
     }
   })
-  // trả về tài khoản, access token và refresh token
   return {
     account,
     accessToken,
     refreshToken
   }
 }
-// cập nhật refresh token
+
 export const refreshTokenController = async (refreshToken: string) => {
-  // giải mã refresh token
   let decodedRefreshToken: TokenPayload
-  try { // kiểm tra refresh token có hợp lệ không
+  try {
     decodedRefreshToken = verifyRefreshToken(refreshToken)
   } catch (error) {
-    // nếu refresh token không hợp lệ
     throw new AuthError('Refresh token không hợp lệ')
   }
-  // tìm refresh token trong database
   const refreshTokenDoc = await prisma.refreshToken.findUniqueOrThrow({
     where: {
       token: refreshToken
@@ -79,26 +69,21 @@ export const refreshTokenController = async (refreshToken: string) => {
       account: true
     }
   })
-  // lấy tài khoản từ refresh token
   const account = refreshTokenDoc.account
-  // tạo access token mới
   const newAccessToken = signAccessToken({
     userId: account.id,
     role: account.role as RoleType
   })
-  // tạo refresh token mới
   const newRefreshToken = signRefreshToken({
     userId: account.id,
     role: account.role as RoleType,
-    exp: decodedRefreshToken.exp // thời hạn refresh token vẫn giữ nguyên như cũ
+    exp: decodedRefreshToken.exp
   })
-  // xóa refresh token cũ khỏi database
   await prisma.refreshToken.delete({
     where: {
       token: refreshToken
     }
   })
-  // tạo refresh token mới lưu vào database với thời hạn refresh token vẫn giữ nguyên như cũ
   await prisma.refreshToken.create({
     data: {
       accountId: account.id,
@@ -106,7 +91,6 @@ export const refreshTokenController = async (refreshToken: string) => {
       expiresAt: refreshTokenDoc.expiresAt
     }
   })
-  // trả về access token mới và refresh token mới
   return {
     accessToken: newAccessToken,
     refreshToken: newRefreshToken

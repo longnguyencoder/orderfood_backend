@@ -1,5 +1,5 @@
 import envConfig from '@/config'
-import { // import controller
+import {
   loginController,
   loginGoogleController,
   logoutController,
@@ -7,7 +7,7 @@ import { // import controller
 } from '@/controllers/auth.controller'
 import { requireLoginedHook } from '@/hooks/auth.hooks'
 import {
-  LoginBody, 
+  LoginBody,
   LoginBodyType,
   LoginGoogleQuery,
   LoginGoogleQueryType,
@@ -33,7 +33,6 @@ export default async function authRoutes(fastify: FastifyInstance, options: Fast
         },
         body: LogoutBody
       },
-      // kiểm tra xem user đã đăng nhập chưa
       preValidation: fastify.auth([requireLoginedHook])
     },
     async (request, reply) => {
