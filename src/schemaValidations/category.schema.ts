@@ -4,6 +4,7 @@ export const CategorySchema = z.object({
   id: z.number(),
   name: z.string(),
   description: z.string().nullable(),
+  image: z.string().nullable(),
   createdAt: z.date(),
   updatedAt: z.date()
 })
@@ -11,14 +12,16 @@ export const CategorySchema = z.object({
 export const CreateCategoryBody = z
   .object({
     name: z.string().trim().min(2).max(100),
-    description: z.string().trim().max(500).optional()
+    description: z.string().trim().max(500).optional(),
+    image: z.string().trim() 
   })
   .strict()
 
 export const UpdateCategoryBody = z
   .object({
     name: z.string().trim().min(2).max(100).optional(),
-    description: z.string().trim().max(500).optional()
+    description: z.string().trim().max(500).optional(),
+    image: z.string().trim().optional()
   })
   .strict()
 

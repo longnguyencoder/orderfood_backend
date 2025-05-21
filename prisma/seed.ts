@@ -1,5 +1,7 @@
 import { hashPassword } from '../src/utils/crypto';
 import { PrismaClient } from '@prisma/client'
+
+
 const prisma = new PrismaClient()
 
 async function main() {
@@ -18,7 +20,7 @@ async function main() {
   const owner = await prisma.account.create({
     data: {
       name: 'Owner',
-      email: 'owner@example.com',
+      email: 'owner@gmail.com',
       password: await hashPassword('123456'),
       role: 'Owner',
       avatar: 'owner-avatar.jpg'
@@ -29,7 +31,7 @@ async function main() {
   const employee1 = await prisma.account.create({
     data: {
       name: 'Employee 1',
-      email: 'employee1@example.com',
+      email: 'employee1@gmail.com',
       password: await hashPassword('123456'),
       role: 'Employee',
       avatar: 'employee1-avatar.jpg',
@@ -40,7 +42,7 @@ async function main() {
   const employee2 = await prisma.account.create({
     data: {
       name: 'Employee 2',
-      email: 'employee2@example.com',
+      email: 'employee2@gmail.com',
       password: await hashPassword('123456'),
       role: 'Employee',
       avatar: 'employee2-avatar.jpg',
@@ -53,6 +55,7 @@ async function main() {
     data: {
       name: 'Rice',
       description: 'All rice-based dishes',
+      image: `${process.env.API_URL}/static/rice.jpg`,
     },
   })
 
@@ -60,6 +63,7 @@ async function main() {
     data: {
       name: 'Noodles',
       description: 'All noodle-based dishes',
+      image: `${process.env.API_URL}/static/noodles.jpg`,
     },
   })
 
@@ -67,6 +71,7 @@ async function main() {
     data: {
       name: 'Drinks',
       description: 'Beverages and soft drinks',
+      image: `${process.env.API_URL}/static/drinks.jpg`,
     },
   })
 
@@ -74,6 +79,7 @@ async function main() {
     data: {
       name: 'Desserts',
       description: 'Sweet treats and desserts',
+      image: `${process.env.API_URL}/static/desserts.jpg`,
     },
   })
 
@@ -83,7 +89,7 @@ async function main() {
       name: 'Broken Rice',
       price: 45000,
       description: 'Traditional Vietnamese broken rice with grilled pork',
-      image: 'broken-rice.jpg',
+      image: `${process.env.API_URL}/static/broken-rice.jpg`,
       status: 'Available',
       categoryId: rice.id,
     },
@@ -94,7 +100,7 @@ async function main() {
       name: 'Chicken Rice',
       price: 50000,
       description: 'Steamed chicken with fragrant rice',
-      image: 'chicken-rice.jpg',
+      image: `${process.env.API_URL}/static/chicken-rice.jpg`,
       status: 'Available',
       categoryId: rice.id,
     },
@@ -105,7 +111,7 @@ async function main() {
       name: 'Pho',
       price: 40000,
       description: 'Vietnamese noodle soup with beef',
-      image: 'pho.jpg',
+      image: `${process.env.API_URL}/static/pho.jpg`,
       status: 'Available',
       categoryId: noodles.id,
     },
@@ -116,7 +122,7 @@ async function main() {
       name: 'Iced Tea',
       price: 10000,
       description: 'Refreshing iced tea',
-      image: 'iced-tea.jpg',
+      image: `${process.env.API_URL}/static/iced-tea.jpg`,
       status: 'Available',
       categoryId: drinks.id,
     },
@@ -127,7 +133,7 @@ async function main() {
       name: 'Che',
       price: 15000,
       description: 'Sweet Vietnamese dessert soup',
-      image: 'che.jpg',
+      image: `${process.env.API_URL}/static/che.jpg`,
       status: 'Available',
       categoryId: desserts.id,
     },

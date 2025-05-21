@@ -6,7 +6,6 @@ import { FastifyInstance } from 'fastify'
 import { createCategory, deleteCategory, getCategoryDetail, getCategoryList, updateCategory } from '@/controllers/category.controller'
 
 export default async function categoryRoutes(fastify: FastifyInstance) {
-  fastify.addHook('preValidation', fastify.auth([requireLoginedHook]))
 
   // Get all categories
   fastify.get(
