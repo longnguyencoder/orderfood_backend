@@ -27,11 +27,8 @@ cd orderfood_backend
 # Install project dependencies
 npm install
 
-# Build the project
-npm run build
-
-# Start the application with PM2
-pm2 start dist/main.js --name "orderfood-backend"
+# Start the application with PM2 in development mode
+pm2 start npm --name "orderfood-backend" -- run dev
 
 # Save PM2 process list
 pm2 save
